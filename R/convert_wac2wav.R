@@ -22,7 +22,7 @@ function(wac_filename, wav_filename, overwrite = FALSE){
   ## source("C:/users/gordo/tuneR/R/convert_wac2wav.R")
   ## arg1 <- c("C:/users/gordo/tuneR/tests/Testfiles/test.wac")
   ## arg2 <- c("C:/users/gordo/tuneR/tests/Testfiles/test.wav")
-    dyn.load("C:/users/gordo/tuneR/src-x64/tuneR.dll")
+  ##  dyn.load("C:/users/gordo/tuneR/src-x64/tuneR.dll")
     
   ## for ubuntu 16.04 64-bit environment
   ## source("C:/users/gordo/tuneR/R/convert_wac2wav.R")
