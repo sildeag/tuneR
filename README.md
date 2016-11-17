@@ -51,7 +51,7 @@ or
 
  dyn.load("/home/gordon/tuneR/src/wac2wav.so")
 
-## both
+## both use
 
  .Call("wac2wav", wac_filename, wav_filename,PACKAGE="tuneR")
 
