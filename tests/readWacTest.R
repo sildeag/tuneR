@@ -12,7 +12,7 @@ garbage <- lapply (d,
         if(.Platform$OS.type == "unix") {
           dyn.load(file.path(cwd,"src","wac2wav.so"))
           } else {
-          dyn.load(file.path(cwd,"src-w64","tuneR.dll"))
+          dyn.load(file.path(cwd,"src","tuneR.dll"))
         }
         convert_wac2wav(wac_file, wav_file, TRUE)
         }
