@@ -3,12 +3,16 @@
 
 An additional functionality provides the ability to 'convert_wac2wav'.  This uses a C program written by ABMI.  
 
-There may be an issue with loading the share library and the R code shows how to dynamically load for 64 bit Windows
-and Ubuntu 16.04.
+There may be an issue with loading the share library depending on
+operating environment and whether it is 64 bit or 32 bit.
 
-Updating to the latest version of tuneR
+The R code shown below shows how to dynamically load for 64 bit Windows
+and Ubuntu 16.04 64 bit.
 
-Make sure you have a working development environment.
+Update to the latest version of tuneR
+
+It might help to have a working development environment and these instructions might
+get you started:
 
 Windows: Install Rtools.
 
@@ -16,16 +20,17 @@ Mac: Install Xcode from the Mac App Store.
 
 Linux: Install a compiler and various development libraries (details vary across different flavors of Linux).
 
-Install the development version of devtools.
+Install package devtools.
+
+Then install the development version of tuneR.
 
 devtools::install_github("sildeag/tuneR")
 
-If that fails use https://github.com/sildeag/tuneR.git to empty folder and
-then in R use:
+If that fails either clone https://github.com/sildeag/tuneR.git to empty folder: 'folder name' and then in R use:
 
-source("folder name/R/convert_wac2wav.R")
+source("'folder name'/R/convert_wac2wav.R")
 
-The code has examples of dynamic load dyn.load
+The git repository has examples of dynamic load dyn.load
  
  ## for windows 10 64-bit environment
  
@@ -33,9 +38,9 @@ The code has examples of dynamic load dyn.load
  
  ## character vectors
  
- arg1 <- c("C:/users/sildeag/tuneR/tests/Testfiles/test.wac")
+ wac_filename <- c("C:/users/sildeag/tuneR/tests/Testfiles/test.wac")
  
- arg2 <- c("C:/users/sildeag/tuneR/tests/Testfiles/test.wav")
+ wav_filename <- c("C:/users/sildeag/tuneR/tests/Testfiles/test.wav")
  
  dyn.load("C:/users/sildeag/tuneR/src/tuneR.dll")
 
@@ -45,16 +50,22 @@ or
 
  source("C:/home/sildeag/tuneR/R/convert_wac2wav.R")
 
- arg1 <- c("/home/sildeag/tuneR/tests/Testfiles/test.wac")
+ wac_filename <- c("/home/sildeag/tuneR/tests/Testfiles/test.wac")
 
- arg2 <- c("/home/sildeag/tuneR/tests/Testfiles/test.wav")
+ wav_filename <- c("/home/sildeag/tuneR/tests/Testfiles/test.wav")
 
  dyn.load("/home/sildeag/tuneR/src/tuneR.so")
 
-## both use
+## and all operating environments use
 
  .Call("wac2wav", wac_filename, wav_filename,PACKAGE="tuneR")
 
 
-Note: be careful in moving accessing wac files in both unix and windows
+Note: be careful in accessing the 'binary' wac files in both unix and windows
 at same time as EOF encoding may be slightly diffent.
+
+In order to convert all wac files in a folder follow the test example given in:
+
+'folder name'/tuneR/tests/readWacTest.R  
+
+Note: whether the operating environment is 32-bit/64-bit or windows or unix makes a difference to the shared library.
