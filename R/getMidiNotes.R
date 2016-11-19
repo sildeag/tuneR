@@ -1,3 +1,5 @@
+#' @export
+
 getMidiNotes <- function(x, ...){
     x <- x[x$event %in% c("Note On", "Note Off"), c("time", "event", "channel", "parameter1", "parameter2", "track")]
     if(!nrow(x)){

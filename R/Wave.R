@@ -1,8 +1,13 @@
 ##########
 # define class Wave
+
+#' @exportClass WaveGeneral
+
 setClass("WaveGeneral",
     slots = representation(samp.rate = "numeric", bit = "numeric", pcm = "logical"),
     prototype = prototype(samp.rate = 44100, bit = 16, pcm = TRUE))
+
+#' @exportClass Wave
 
 setClass("Wave",
     slots = representation(left = "numeric",
@@ -10,8 +15,11 @@ setClass("Wave",
     contains = "WaveGeneral",
     prototype = prototype(stereo = TRUE))
 
+#' @exportClass WaveMC
+
 setClass("WaveMC", contains=c("WaveGeneral", "matrix"))
 
+#' @export
 
 ## convert Wave objects from tuneR <= 0.4-1 to the extended representation
 updateWave <- function(object){
@@ -19,6 +27,8 @@ updateWave <- function(object){
         object@pcm <- TRUE
      object
 }
+
+#' @export
 
 setValidity("WaveGeneral", 
 function(object){
@@ -35,6 +45,8 @@ function(object){
     return(TRUE)
 })
 
+#' @export
+
 setValidity("Wave", 
 function(object){
     if(!(length(object@stereo) < 2))
@@ -48,6 +60,8 @@ function(object){
     return(TRUE)
 })
 
+#' @export
+
 setValidity("WaveMC", 
 function(object){
     if(!(mode(object@.Data) == "numeric")) return("channels of WaveMC objects must be numeric")
@@ -56,7 +70,7 @@ function(object){
 
 
 
-
+#' @export
 
 setMethod("[", signature(x = "Wave"),
 function(x, i, j, ..., drop=FALSE){
@@ -79,7 +93,7 @@ function(x, i, j, ..., drop=FALSE){
     return(x)
 })
 
-
+#' @export
 
 setMethod("[", signature(x = "WaveMC"),
 function(x, i, j, ..., drop=FALSE){
@@ -90,15 +104,19 @@ function(x, i, j, ..., drop=FALSE){
     return(x)
 })
 
+#' @export
 
 ##########
 # Wave object generating functions
 setGeneric("Wave",
 function(left, ...) standardGeneric("Wave"))
 
+#' @export
+
 setGeneric("WaveMC",
 function(data, ...) standardGeneric("WaveMC"))
 
+#' @export
 
 setMethod("Wave", signature(left = "numeric"), 
 function(left, right = numeric(0), samp.rate = 44100, bit = 16, pcm = TRUE, ...){
@@ -111,20 +129,28 @@ function(left, right = numeric(0), samp.rate = 44100, bit = 16, pcm = TRUE, ...)
             bit = bit, left = left, right = right, pcm = pcm, ...))
 })
 
+#' @export
+
 setMethod("WaveMC", signature(data = "numeric"), 
 function(data = numeric(0), ...){
     WaveMC(as.matrix(data), ...)
 })
+
+#' @export
 
 setMethod("Wave", signature(left = "WaveMC"), 
 function(left, ...)
     as(left, "Wave")
 )
 
+#' @export
+
 setMethod("Wave", signature(left = "matrix"), 
 function(left, ...)
     Wave(as.data.frame(left), ...)
 )
+
+#' @export
 
 setMethod("WaveMC", signature(data = "matrix"), 
 function(data = matrix(numeric(0), 0, 0), samp.rate = 44100, bit = 16, pcm = TRUE, ...){
@@ -137,22 +163,28 @@ function(data = matrix(numeric(0), 0, 0), samp.rate = 44100, bit = 16, pcm = TRU
             bit = bit, pcm = pcm, ...))
 })
 
+#' @export
+
 setMethod("Wave", signature(left = "data.frame"), 
 function(left, ...)
     Wave(as.list(left), ...)
 )
+
+#' @export
 
 setMethod("WaveMC", signature(data = "data.frame"), 
 function(data, ...)
     WaveMC(as.matrix(data), ...)
 )
 
+#' @export
 
 setMethod("WaveMC", signature(data = "Wave"), 
 function(data, ...)
     as(data, "WaveMC")
 )
 
+#' @export
 
 setMethod("Wave", signature(left = "list"), 
 function(left, ...){
@@ -168,6 +200,7 @@ function(left, ...){
     else Wave(left[[1]], ...)
 })
 
+#' @export
 
 setMethod("WaveMC", signature(data = "list"), 
 function(data, ...){
@@ -210,7 +243,7 @@ setAs("WaveMC", "Wave", function(from, to){
     Wave(from@.Data, samp.rate = from@samp.rate, bit = from@bit, pcm = from@pcm)
 })
 
-
+#' @export
 
 setMethod("show", signature(object = "Wave"), 
 function(object){
@@ -225,6 +258,8 @@ function(object){
     cat("\n\tPCM (integer format):  ", object@pcm)
     cat("\n\tBit (8/16/24/32/64):   ", object@bit, "\n\n")
 })
+
+#' @export 
 
 setMethod("show", signature(object = "WaveMC"), 
 function(object){

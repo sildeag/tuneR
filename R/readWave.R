@@ -1,3 +1,5 @@
+#' @export
+
 readWave <- 
 function(filename, from = 1, to = Inf, 
     units = c("samples", "seconds", "minutes", "hours"), header = FALSE, toWaveMC = NULL){

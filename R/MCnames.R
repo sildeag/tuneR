@@ -1,3 +1,5 @@
+#' @export
+
 MCnames <- data.frame(id = 1:18, 
         label = c("Front Left","Front Right","Front Center","Low Frequency","Back Left","Back Right",
             "Front Left of Center","Front Right of Center","Back Center","Side Left","Side Right",

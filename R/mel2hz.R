@@ -3,6 +3,8 @@
 # International Computer Science Institute.  For more details, see:
 # http://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/
 
+#' @export
+
 mel2hz <- function(z, htk=FALSE){
     
     if(!is.numeric(z) || z < 0)
@@ -30,4 +32,3 @@ mel2hz <- function(z, htk=FALSE){
     }
     return(f)
 }
-

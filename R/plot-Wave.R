@@ -1,3 +1,5 @@
+#' @export
+
 plot.Wave.channel <- 
 function(x, xunit, ylim, xlab, ylab, main, nr, simplify, axes = TRUE, yaxt = par("yaxt"), 
         las = 1, center = TRUE, ...){
@@ -33,6 +35,7 @@ function(x, xunit, ylim, xlab, ylab, main, nr, simplify, axes = TRUE, yaxt = par
     if(axes) axis(2, at = at, yaxt = yaxt, las = las)
 }
 
+#' @export
 
 setMethod("plot", signature(x = "Wave", y = "missing"),
 function(x, info = FALSE, xunit = c("time", "samples"), 
@@ -95,6 +98,7 @@ function(x, info = FALSE, xunit = c("time", "samples"),
     }
 })
 
+#' @export
 
 setMethod("plot", signature(x = "WaveMC", y = "missing"),
 function(x, info = FALSE, xunit = c("time", "samples"), 

@@ -3,6 +3,8 @@
 # International Computer Science Institute.  For more details, see:
 # http://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/
 
+#' @export
+
 melfcc <- function(samples, sr=samples@samp.rate, wintime=0.025, hoptime=0.010,
             numcep=12, lifterexp=0.6, htklifter=FALSE,
             sumpower=TRUE, preemph=0.97, dither=FALSE,

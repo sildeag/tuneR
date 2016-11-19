@@ -1,5 +1,9 @@
+#' @export
+
 setGeneric("bind",
 function(object, ...) standardGeneric("bind"))
+
+#' @export 
 
 setMethod("bind", signature(object = "Wave"), 
 function(object, ...){
@@ -12,6 +16,8 @@ function(object, ...){
     return(object)
 }
 )
+
+#' @export 
 
 setMethod("bind", signature(object = "WaveMC"), 
 function(object, ...){

@@ -3,6 +3,8 @@
 # International Computer Science Institute.  For more details, see:
 # http://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/
 
+#' @export
+
 postaud <- function(x, fmax, fbtype=c("bark", "mel", "htkmel", "fcmel"),
 broaden=FALSE){
 
@@ -42,4 +44,3 @@ broaden=FALSE){
     }
     return(list(y=y, eql=eql))
 }
-

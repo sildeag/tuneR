@@ -1,3 +1,5 @@
+#' @export
+
 writeWave <- 
 function(object, filename, extensible = TRUE) {
     if(!is(object, "WaveGeneral")) 

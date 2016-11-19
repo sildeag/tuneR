@@ -26,46 +26,43 @@ Then install the development version of tuneR.
 
 devtools::install_github("sildeag/tuneR")
 
+18/11/2016 changed to add roxygen2 export and dynamic calls
+
+
 If that fails either clone https://github.com/sildeag/tuneR.git to empty folder: 'folder name' and then in R use:
 
 source("'folder name'/R/convert_wac2wav.R")
 
 The git repository has examples of dynamic load dyn.load
  
- ## for windows 10 64-bit environment
+## for windows 10 64-bit environment
+
+wac_filename <- c("C:/users/sildeag/tuneR/tests/Testfiles/test.wac")
  
- source("C:/users/sildeag/tuneR/R/convert_wac2wav.R")
+wav_filename <- c("C:/users/sildeag/tuneR/tests/Testfiles/test.wav")
  
- ## character vectors
- 
- wac_filename <- c("C:/users/sildeag/tuneR/tests/Testfiles/test.wac")
- 
- wav_filename <- c("C:/users/sildeag/tuneR/tests/Testfiles/test.wav")
- 
- dyn.load("C:/users/sildeag/tuneR/src/tuneR.dll")
+convert_wac2wav(wac_filename,wav_filename)
 
 or
 
- ## for ubuntu 16.04 64-bit environment
+## for ubuntu 16.04 64-bit environment
 
- source("C:/home/sildeag/tuneR/R/convert_wac2wav.R")
+ 
+wac_filename <- c("/home/sildeag/tuneR/tests/Testfiles/test.wac")
 
- wac_filename <- c("/home/sildeag/tuneR/tests/Testfiles/test.wac")
+wav_filename <- c("/home/sildeag/tuneR/tests/Testfiles/test.wav")
 
- wav_filename <- c("/home/sildeag/tuneR/tests/Testfiles/test.wav")
-
- dyn.load("/home/sildeag/tuneR/src/tuneR.so")
-
-## and all operating environments use
-
- .Call("wac2wav", wac_filename, wav_filename,PACKAGE="tuneR")
-
+convert_wac2wav(wac_filename,wav_filename)
 
 Note: be careful in accessing the 'binary' wac files in both unix and windows
-at same time as EOF encoding may be slightly diffent.
+at same time as EOF encoding may be slightly different.
 
 In order to convert all wac files in a folder follow the test example given in:
 
-'folder name'/tuneR/tests/readWacTest.R  
+'folder name'/tuneR/tests/readWacTest.R
+
+this uses 'folder name'/tuneR/tests/Testfiles
+
+or try convert_folder_wac2wav(wac_folder)
 
 Note: whether the operating environment is 32-bit/64-bit or windows or unix makes a difference to the shared library.

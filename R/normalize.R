@@ -1,6 +1,10 @@
+#' @export
+
 setGeneric("normalize",
   function(object, unit = c("1", "8", "16", "24", "32", "64", "0"), center = TRUE, level = 1, rescale = TRUE, pcm = object@pcm)
     standardGeneric("normalize"))
+
+#' @export
 
 setMethod("normalize", signature(object = "Wave"),
   function(object, unit = c("1", "8", "16", "24", "32", "64", "0"), center = TRUE, level = 1, rescale = TRUE, pcm = object@pcm){   
@@ -68,9 +72,7 @@ setMethod("normalize", signature(object = "Wave"),
     return(object)
 })
 
-
-
-
+#' @export
 
 setMethod("normalize", signature(object = "WaveMC"),
   function(object, unit = c("1", "8", "16", "24", "32", "64", "0"), center = TRUE, level = 1, rescale = TRUE, pcm = object@pcm){   

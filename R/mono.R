@@ -1,3 +1,5 @@
+#' @export
+
 mono <- 
 function(object, which = c("left", "right", "both")){
     if(!is(object, "Wave")) 

@@ -1,5 +1,9 @@
+#' @export
+
 setGeneric("periodogram",
     function(object, ...) standardGeneric("periodogram"))
+
+#' @export
 
 setMethod("periodogram", signature(object = "WaveGeneral"), 
 function(object, width = length(object), overlap = 0,
@@ -85,7 +89,7 @@ function(object, width = length(object), overlap = 0,
     return(Wspec)
 })
 
-
+#' @export
 
 setMethod("periodogram", signature(object = "character"), 
 function(object, width, overlap = 0, from = 1, to = Inf, 

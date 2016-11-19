@@ -3,6 +3,8 @@
 # International Computer Science Institute.  For more details, see:
 # http://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/
 
+#' @export
+
 powspec <- function(x, sr=8000, wintime=0.025, steptime=0.010, dither=FALSE){
     if((!is.numeric(x)) || (!is.null(dim(x))))
       stop("'x' has to be a numeric vector.")

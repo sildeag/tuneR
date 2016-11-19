@@ -1,7 +1,10 @@
+#' @export
+
 setGeneric("noSilence",
 function(object, zero = 0, level = 0, where = c("both", "start", "end")) 
     standardGeneric("noSilence"))
 
+#' @export
 
 setMethod("noSilence", signature(object = "Wave"),
 function(object, zero = 0, level = 0, where = c("both", "start", "end")){
@@ -37,9 +40,7 @@ function(object, zero = 0, level = 0, where = c("both", "start", "end")){
     }
 })
 
-
-
-
+#' @export
 
 setMethod("noSilence", signature(object = "WaveMC"),
 function(object, zero = 0, level = 0, where = c("both", "start", "end")){

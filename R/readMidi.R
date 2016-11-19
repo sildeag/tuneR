@@ -1,3 +1,5 @@
+#' @export
+
 readVarLength <- function(con){
   b <- numeric(4)
   b[1] <- readBin(con, integer(0), n = 1, size = 1, signed = FALSE, endian = "big")
@@ -21,6 +23,8 @@ readVarLength <- function(con){
   }
   c(sum(b), bytes)
 }
+
+#' @export
 
 readMTrkEvent <- function(con, lastEventChannel = NA){
     DTtemp <- readVarLength(con)
@@ -105,6 +109,8 @@ readMTrkEvent <- function(con, lastEventChannel = NA){
     return(list(deltatime=DT, event=eventName, type=NA, channel = channel, parameter1=parameter1, parameter2=parameter2, 
                 parameterMetaSystem=NA, bytes=2+DTtemp[2]+ !(event %in% c("c", "d"))-backseeked, EventChannel=EventChannel))
 }
+
+#' @export
 
 readMidi <- function(file){
   con <- file(description = file, open = "rb")

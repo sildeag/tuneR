@@ -1,3 +1,7 @@
+#' @export
+#' @importFrom graphics  plot image
+#' @importFrom graphics  abline  axTicks  axis  locator  mtext  par  segments  title  
+
 melodyplot <- 
 function(object, observed, expected = NULL, bars = NULL, main = NULL, 
     xlab = NULL, ylab = "note", xlim = NULL, ylim = NULL, 

@@ -16,7 +16,6 @@ function(object1, object2){
 }
 )
 
-
 setMethod("equalWave", signature(object1 = "WaveMC", object2 = "WaveMC"), 
 function(object1, object2){
     if(!(validObject(object1) && validObject(object2)))
@@ -31,7 +30,6 @@ function(object1, object2){
         stop("The number of channels of the 'WaveMC' objects differ")
 }
 )
-
 
 setMethod("equalWave", signature(object1 = "WaveMC", object2 = "ANY"), 
 function(object1, object2){

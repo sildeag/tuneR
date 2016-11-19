@@ -1,3 +1,5 @@
+#' @export
+
 FFpure <- 
 function(object, peakheight = 0.01, diapason = 440, 
     notes = NULL, interest.frqs = seq(along = object@freq),
@@ -61,6 +63,7 @@ function(object, peakheight = 0.01, diapason = 440,
     return(interesse * object@freq[1])
 }    
 
+#' @export
 
 FF <- 
 function(object, peakheight = 0.01, silence = 0.2, minpeak = 9, 
@@ -79,6 +82,8 @@ function(object, peakheight = 0.01, silence = 0.2, minpeak = 9,
     }
     return(FFvalue)
 }
+
+#' @export
 
 noteFromFF <-
 function(x, diapason = 440, roundshift = 0)

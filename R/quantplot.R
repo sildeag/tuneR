@@ -1,3 +1,6 @@
+#' @export
+#' @importFrom graphics axis rect points abline mtext box
+
 quantplot <- 
 function(observed, energy = NULL, expected = NULL, bars, 
     barseg = round(length(observed) / bars), 

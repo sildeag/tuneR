@@ -1,6 +1,9 @@
 require(methods)
 ##########
 # define class Wspec
+
+#' @export 
+
 setClass("Wspec",
     representation = representation(
         freq = "numeric",
@@ -20,6 +23,7 @@ setClass("Wspec",
     prototype = prototype(taper = 0, 
         stereo = FALSE, samp.rate = 44100))
 
+#' @export
 
 setMethod("[", signature(x = "Wspec"),
 function(x, i, j, ..., drop=FALSE){
@@ -34,6 +38,7 @@ function(x, i, j, ..., drop=FALSE){
     return(x)
 })
 
+#' @export
 
 setMethod("show", signature(object = "Wspec"), 
 function(object){
@@ -48,6 +53,7 @@ function(object){
     cat("normal.:", object@normalize, "\n\n")
 })
 
+#' @export
 
 setMethod("summary", signature(object = "Wspec"),
 function(object, ...){
@@ -71,6 +77,7 @@ function(object, ...){
 })
 
 
+#' @export 
 
 ##########
 # define class Wspec
@@ -93,7 +100,7 @@ setClass("WspecMat",
     prototype = prototype(taper = 0, 
         stereo = FALSE, samp.rate = 44100))
 
-
+#' @export
 
 setMethod("[", signature(x = "WspecMat"),
 function(x, i, j, ..., drop=FALSE){
@@ -108,6 +115,7 @@ function(x, i, j, ..., drop=FALSE){
     return(x)
 })
 
+#' @export
 
 setMethod("show", signature(object = "WspecMat"), 
 function(object){
@@ -122,6 +130,7 @@ function(object){
     cat("normal.:", object@normalize, "\n\n")
 })
 
+#' @export
 
 setMethod("summary", signature(object = "WspecMat"),
 function(object, ...){
@@ -143,6 +152,8 @@ function(object, ...){
     cat("Properties of the Wave object:\n")
     cat("Sampling rate:", object@samp.rate, "\n\n")
 })
+
+#' @export
 
 setAs("Wspec", "WspecMat", function(from, to) {
     spec <- from@spec
