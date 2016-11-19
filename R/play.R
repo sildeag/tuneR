@@ -1,5 +1,9 @@
+#' @export
+
 setGeneric("play",
 function(object, player, ...) standardGeneric("play"))
+
+#' @export
 
 setMethod("play", signature(object = "character", player = "ANY"),
 function(object, player, ...){
@@ -22,6 +26,8 @@ function(object, player, ...){
         system(paste(player, ..., object))
     }
 })
+
+#' @export
 
 setMethod("play", signature(object = "WaveGeneral", player = "ANY"),
 function(object, player, ...){

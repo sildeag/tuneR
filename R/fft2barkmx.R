@@ -3,6 +3,8 @@
 # International Computer Science Institute.  For more details, see:
 # http://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/
 
+#' @export
+
 fft2barkmx <- function(nfft, sr=8000, nfilts=NULL, width=1.0, minfreq=0, maxfreq=sr/2){
 
     if(!(sr==as.integer(sr) && nfft==as.integer(nfft)) || sr <= 0 || nfft <= 0)

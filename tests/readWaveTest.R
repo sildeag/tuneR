@@ -1,8 +1,9 @@
 library("tuneR")
-d <- list.files("Testfiles", pattern="\\.wav$")
+cwd <- getwd()
+d <- list.files(file.path(cwd,"tests","Testfiles"), pattern="\\.wav$")
 garbage <- lapply(d, 
     function(x) {
-        wav <- readWave(file.path("Testfiles", x))
+        wav <- readWave(file.path(cwd,"tests","Testfiles", x))
         cat(x, "\n")
         print(wav)
         if(is(wav, "Wave")){
@@ -14,3 +15,4 @@ garbage <- lapply(d,
         }
     }
 )
+

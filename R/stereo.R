@@ -1,3 +1,5 @@
+#' @export
+
 stereo <- 
 function(left, right){
     if(missing(right))

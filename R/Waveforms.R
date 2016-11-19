@@ -1,3 +1,5 @@
+#' @export
+
 preWaveform <- function(freq, duration, from, xunit, samp.rate){
     if (!is.numeric(duration) || duration <= 0 || length(duration) != 1)
         stop("'duration' must be a positive numeric of length 1")
@@ -14,6 +16,8 @@ preWaveform <- function(freq, duration, from, xunit, samp.rate){
     return(c(duration = round(duration), from = round(from)))
 }
 
+#' @export
+
 postWaveform <- function(channel, samp.rate, bit, stereo, pcm = FALSE, ...){
     if(!is.numeric(bit) || length(bit)!=1 || (!bit %in% c(0,1,8,16,24,32,64)))
         stop("'bit' must be an integer of length 1 in {0,1,8,16,24,32,64}")
@@ -26,6 +30,8 @@ postWaveform <- function(channel, samp.rate, bit, stereo, pcm = FALSE, ...){
     normalize(Wobj, unit = as.character(bit), center = FALSE)
 }
 
+#' @export
+
 silence <- function(duration = samp.rate, from = 0, samp.rate = 44100, bit = 1, 
                     stereo = FALSE, xunit = c("samples", "time"), ...){
     xunit <- match.arg(xunit)
@@ -36,6 +42,8 @@ silence <- function(duration = samp.rate, from = 0, samp.rate = 44100, bit = 1,
         bit = bit, stereo = stereo, ...)
 }
 
+#' @export
+
 sine <- function(freq, duration = samp.rate, from = 0, samp.rate = 44100, bit = 1, 
                  stereo = FALSE, xunit = c("samples", "time"), ...){
     xunit <- match.arg(xunit)
@@ -45,6 +53,8 @@ sine <- function(freq, duration = samp.rate, from = 0, samp.rate = 44100, bit = 
     postWaveform(channel = channel, samp.rate = samp.rate, 
         bit = bit, stereo = stereo, ...)
 }
+
+#' @export
 
 sawtooth <- function(freq, duration = samp.rate, from = 0, samp.rate = 44100, bit = 1, 
                      stereo = FALSE, xunit = c("samples", "time"), reverse = FALSE, ...){
@@ -60,6 +70,8 @@ sawtooth <- function(freq, duration = samp.rate, from = 0, samp.rate = 44100, bi
         bit = bit, stereo = stereo, ...)
 }
 
+#' @export
+
 square <- function(freq, duration = samp.rate, from = 0, samp.rate = 44100, bit = 1, 
                    stereo = FALSE, xunit = c("samples", "time"), up = 0.5, ...){
     xunit <- match.arg(xunit)
@@ -73,6 +85,8 @@ square <- function(freq, duration = samp.rate, from = 0, samp.rate = 44100, bit 
     postWaveform(channel = channel, samp.rate = samp.rate, 
         bit = bit, stereo = stereo, ...)
 }
+
+#' @export
 
 noise <- function(kind = c("white", "pink", "power", "red"), duration = samp.rate,
                   samp.rate = 44100, bit = 1, stereo = FALSE, 
@@ -97,7 +111,7 @@ noise <- function(kind = c("white", "pink", "power", "red"), duration = samp.rat
 }
 
 
-
+#' @export
 
 ### Power law noise generator by Timmer & Koenig (1995)
 ### contributed by Anita Thieler
@@ -117,6 +131,9 @@ TK95 <- function(N, alpha = 1){
     return(Re(reihe)) # imaginary part is 0
 }
 
+#' @export
+#' @useDynLib tuneR pulsewav
+
 pulse <- function(freq, duration = samp.rate, from = 0, samp.rate = 44100, bit = 1, 
                   stereo = FALSE, xunit = c("samples", "time"), width = 0.1,
                   plateau = 0.2, interval = 0.5, ...){
@@ -129,7 +146,7 @@ pulse <- function(freq, duration = samp.rate, from = 0, samp.rate = 44100, bit =
     x <- freq * (durFrom["from"]:(sum(durFrom)-1)) / samp.rate
     channel <- .C("pulsewav", as.integer(length(x)),
                   as.double(width), as.double(interval), as.double(plateau),
-                  as.double(x), y = double(length(x)))$y
+                  as.double(x), y = double(length(x)))
     postWaveform(channel = channel, samp.rate = samp.rate,
                  bit = bit, stereo = stereo, ...)
 }

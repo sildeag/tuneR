@@ -1,3 +1,5 @@
+#' @export
+
 prepComb <- function(object, zero = 0, where = c("both", "start", "end")){
     if(!(is(object, "Wave") || is(object, "WaveMC"))) 
         stop("'object' needs to be of class 'Wave' or 'WaveMC'")

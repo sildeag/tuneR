@@ -3,6 +3,8 @@
 # International Computer Science Institute.  For more details, see:
 # http://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/
 
+#' @export
+
 spec2cep <- function(spec, ncep=12, type=c("t2", "t1", "t3", "t4")){
 
     if(!(is.numeric(spec) && is.matrix(spec)))

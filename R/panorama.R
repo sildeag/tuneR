@@ -1,3 +1,5 @@
+#' @export
+
 setGeneric("panorama",
 function(object, pan = 1) standardGeneric("panorama"))
 

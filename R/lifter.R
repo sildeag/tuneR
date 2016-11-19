@@ -3,6 +3,8 @@
 # International Computer Science Institute.  For more details, see:
 # http://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/
 
+#' @export
+
 lifter <- function(x, lift=0.6, inv=FALSE, htk=FALSE){
 
   if(!(is.numeric(x) && is.matrix(x)))
@@ -34,4 +36,3 @@ lifter <- function(x, lift=0.6, inv=FALSE, htk=FALSE){
   }
   return(y)
 }
-

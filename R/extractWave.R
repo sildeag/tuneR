@@ -1,3 +1,5 @@
+#' @export
+
 extractWave <-
 function(object, from = 1, to = length(object), 
     interact = interactive(), xunit = c("samples", "time"), ...){

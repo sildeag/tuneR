@@ -1,3 +1,5 @@
+#' @export
+
 downsample <- 
 function(object, samp.rate){
     if(!(is(object, "Wave") || is(object, "WaveMC"))) 

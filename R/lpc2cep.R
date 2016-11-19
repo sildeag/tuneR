@@ -3,6 +3,8 @@
 # International Computer Science Institute.  For more details, see:
 # http://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/
 
+#' @export
+
 lpc2cep <- function(a, nout=nrow(a)){
 
     if(!(is.numeric(a) && is.matrix(a)))
@@ -37,4 +39,3 @@ lpc2cep <- function(a, nout=nrow(a)){
 
     return(features)
 }
-

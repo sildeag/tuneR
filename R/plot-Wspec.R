@@ -1,3 +1,5 @@
+#' @export
+
 setMethod("plot", signature(x = "Wspec", y = "missing"),
 function(x, which = 1, type = "h", xlab = "Frequency", ylab = NULL, log = "", ...){
 
@@ -10,6 +12,7 @@ function(x, which = 1, type = "h", xlab = "Frequency", ylab = NULL, log = "", ..
         xlab = xlab, ylab = ylab, log = log, ...)
 })
 
+#' @export
 
 setMethod("plot", signature(x = "WspecMat", y = "missing"),
 function(x, xlab = "time", ylab = "Frequency", xunit = c("samples", "time"), log = "", ...){
@@ -23,6 +26,8 @@ function(x, xlab = "time", ylab = "Frequency", xunit = c("samples", "time"), log
     }
     image(x@starts, x@freq, x@spec, xlab = xlab, ylab = ylab, log = log, ...)
 })
+
+#' @export
 
 setMethod("image", signature(x = "Wspec"),
 function(x, xlab = "time", ylab = "Frequency", xunit = c("samples", "time"), log = "", ...){

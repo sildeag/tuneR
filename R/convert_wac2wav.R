@@ -1,3 +1,6 @@
+#' @export
+#' @useDynLib tuneR wac2wav
+
 convert_wac2wav <- 
 function(wac_filename, wav_filename, overwrite = FALSE){
     if(!is.character(wac_filename))
@@ -18,16 +21,5 @@ function(wac_filename, wav_filename, overwrite = FALSE){
     if(file.exists(wav_filename) && overwrite == TRUE &&
        file.access(wav_filename, 2) != 0)
         stop("No write permission for file ", wav_filename)
-  ## for windows 10 64-bit environment
-  ## source("C:/users/gordo/tuneR/R/convert_wac2wav.R")
-  ## arg1 <- c("C:/users/gordo/tuneR/tests/Testfiles/test.wac")
-  ## arg2 <- c("C:/users/gordo/tuneR/tests/Testfiles/test.wav")
-  ##  dyn.load("C:/users/gordo/tuneR/src-x64/tuneR.dll")
-    
-  ## for ubuntu 16.04 64-bit environment
-  ## source("C:/users/gordo/tuneR/R/convert_wac2wav.R")
-  ## arg1 <- c("/home/gordon/tuneR/tests/Testfiles/test.wac")
-  ## arg2 <- c("/home/gordon/tuneR/tests/Testfiles/test.wav")
-  ## dyn.load("/home/gordon/tuneR/src/wac2wav.so")
-    .Call("wac2wav", wac_filename, wav_filename,PACKAGE="tuneR")
+    .Call("wac2wav", wac_filename, wav_filename)
 }

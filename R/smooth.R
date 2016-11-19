@@ -1,3 +1,5 @@
+#' @export
+
 smoother <- function(notes, method ="median", order=4, times=2){
     if(!requireNamespace("pastecs"))
         stop("The suggested package 'pastecs' is required for this functionality")

@@ -1,3 +1,5 @@
+#' @export
+
 quantize <- function(notes, energy, parts){
     if(missing(notes))
         notes <- rep(-100, length(energy))
@@ -26,6 +28,7 @@ quantize <- function(notes, energy, parts){
     return(list(notes=notes, energy=energy))
 }
 
+#' @export
 
 quantMerge <- function(notes, minlength, barsize, bars){
     lengthunit <- bars * barsize

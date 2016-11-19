@@ -1,3 +1,5 @@
+#' @export
+
 MFCC <- 
 function(...)
 {

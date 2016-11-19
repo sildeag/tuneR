@@ -1,3 +1,5 @@
+#' @exportClass WaveGeneral
+
 setMethod("length", signature(x = "Wave"), 
 function(x){
     validObject(x)

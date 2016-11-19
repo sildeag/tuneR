@@ -3,6 +3,8 @@
 # International Computer Science Institute.  For more details, see:
 # http://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/
 
+#' @export
+
 hz2bark <- function(f){
     
     if(!is.numeric(f) || f < 0)
@@ -11,4 +13,3 @@ hz2bark <- function(f){
     # Inverse of Hynek's formula (see bark2hz)
     6 * asinh(f/600)
 }
-

@@ -1,3 +1,5 @@
+#' @export
+
 setMethod("Arith", signature(e1 = "Wave", e2 = "Wave"),
 function(e1, e2){
     equalWave(e1, e2)    
@@ -8,6 +10,8 @@ function(e1, e2){
         e1@right <- callGeneric(e1@right, e2@right)
     e1
 })
+
+#' @export
 
 setMethod("Arith", signature(e1 = "numeric", e2 = "Wave"),
 function(e1, e2){
@@ -20,6 +24,8 @@ function(e1, e2){
     e2
 })
 
+#' @export
+
 setMethod("Arith", signature(e1 = "Wave", e2 = "numeric"),
 function(e1, e2){
     validObject(e1)
@@ -31,6 +37,8 @@ function(e1, e2){
     e1
 })
 
+#' @export
+
 setMethod("Arith", signature(e1 = "Wave", e2 = "missing"),
 function(e1, e2){
     validObject(e1)
@@ -40,7 +48,7 @@ function(e1, e2){
     e1
 })
 
-
+#' @export
 
 setMethod("Arith", signature(e1 = "WaveMC", e2 = "WaveMC"),
 function(e1, e2){
@@ -51,6 +59,8 @@ function(e1, e2){
     e1
 })
 
+#' @export
+
 setMethod("Arith", signature(e1 = "WaveMC", e2 = "numeric"),
 function(e1, e2){
     validObject(e1)
@@ -60,6 +70,7 @@ function(e1, e2){
     e1
 })
 
+#' @export
 
 setMethod("Arith", signature(e1 = "numeric", e2 = "WaveMC"),
 function(e1, e2){

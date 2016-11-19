@@ -3,6 +3,8 @@
 # International Computer Science Institute.  For more details, see:
 # http://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/
 
+#' @export
+
 fft2melmx <- function(nfft, sr=8000, nfilts=40, width=1.0, minfreq=0, maxfreq=sr/2,
                 htkmel=FALSE, constamp=FALSE){
 

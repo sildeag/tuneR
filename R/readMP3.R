@@ -1,3 +1,6 @@
+#' @export
+#' @useDynLib tuneR do_read_mp3
+
 ## decode.R - decode MP3 files
 ##
 ## Author: Olaf Mersmann (OME) <olafm@statistik.tu-dortmund.de>
@@ -15,5 +18,5 @@ readMP3 <- function(filename){
     on.exit(close(con)) # be careful ...
 
     data <- readBin(con, raw(), n = file.info(filename)$size)
-    .Call("do_read_mp3", data, PACKAGE = "tuneR")
+    .Call("do_read_mp3", data)
 }

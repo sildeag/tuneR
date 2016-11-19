@@ -1,3 +1,5 @@
+#' @export
+
 channel <- 
 function(object, which = c("both", "left", "right", "mirror")){
     if(!is(object, "Wave")) 

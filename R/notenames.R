@@ -1,3 +1,5 @@
+#' @export
+
 notenames <- function(notes, language = c("english", "german")){
     language <- match.arg(language)
     if(!is.numeric(notes))

@@ -1,3 +1,5 @@
+#' @export
+
 lilyinput <- function(X, file = "Rsong.ly", 
     Major = TRUE, key = "c", clef = c("treble", "bass", "alto", "tenor"), 
     time = "4/4", endbar = TRUE, midi = TRUE, tempo = "2 = 60", 

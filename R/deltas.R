@@ -3,6 +3,8 @@
 # International Computer Science Institute.  For more details, see:
 # http://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/
 
+#' @export
+
 deltas <- function(x, w=9){
 
     if(!(is.numeric(x) && is.matrix(x)))
