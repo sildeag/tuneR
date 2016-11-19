@@ -3,7 +3,7 @@
 convert_folder_wac2wav <- function(wac_files_path) {
   if (!is.null(wac_files_path)) 
     dir.create(file.path(wac_files_path), showWarnings = FALSE)
-  setwd(file.path(mainDir, subDir))
+  setwd(file.path(wac_files_path))
   cwd <- getwd()
   d <- list.files(file.path(cwd), pattern="\\.wac$")
   garbage <- lapply (d, 
