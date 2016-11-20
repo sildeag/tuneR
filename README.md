@@ -1,5 +1,5 @@
 # tuneR
-:exclamation: This is a read-only mirror of the CRAN R package repository.  tuneR — Analysis of Music and Speech 
+:exclamation:?This?is?a?read-only?mirror?of?the?CRAN?R?package?repository.  tuneR???Analysis?of?Music?and?Speech 
 
 An additional functionality provides the ability to 'convert_wac2wav'.  This uses a C program written by ABMI.  
 
@@ -11,8 +11,7 @@ and Ubuntu 16.04 64 bit.
 
 Update to the latest version of tuneR
 
-It might help to have a working development environment and these instructions might
-get you started:
+It might help to have a working development environment and these instructions might get you started:
 
 Windows: Install Rtools.
 
@@ -28,12 +27,8 @@ devtools::install_github("sildeag/tuneR")
 
 18/11/2016 changed to add roxygen2 export and dynamic calls
 
+20/11/2016 fixed fopen for Windows 10 for wac2wav binary conversions
 
-If that fails either clone https://github.com/sildeag/tuneR.git to empty folder: 'folder name' and then in R use:
-
-source("'folder name'/R/convert_wac2wav.R")
-
-The git repository has examples of dynamic load dyn.load
  
 ## for windows 10 64-bit environment
 
@@ -54,15 +49,22 @@ wav_filename <- c("/home/sildeag/tuneR/tests/Testfiles/test.wav")
 
 convert_wac2wav(wac_filename,wav_filename)
 
-Note: be careful in accessing the 'binary' wac files in both unix and windows
-at same time as EOF encoding may be slightly different.
 
-In order to convert all wac files in a folder follow the test example given in:
+In order to convert all wac files in a folder try:
 
-'folder name'/tuneR/tests/readWacTest.R
+convert_folder_wac2wav([wac_folder])
 
-this uses 'folder name'/tuneR/tests/Testfiles
+On Windows
 
-or try convert_folder_wac2wav(wac_folder)
+convert_folder_wac2wav('C:/users/sildeag/Downloads')
+
+Blocksize 32
+Samplerate 44100
+Samplecount 7938048
+Seeksize 16
+Seekentries 8192
+
+Processing: testxyz2 .............................................................Done
+
 
 Note: whether the operating environment is 32-bit/64-bit or windows or unix makes a difference to the shared library.
