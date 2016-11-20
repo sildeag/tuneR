@@ -240,7 +240,7 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
        error_return(error_message);
   }
 
-  if ((wac_con = fopen(p_wac_filename, "r")) == NULL)
+  if ((wac_con = fopen(p_wac_filename, "rb")) == NULL)
   {
        sprintf(error_message,"wac2wav error 1, %s: unable to read", p_wac_filename);
        UNPROTECT(2);
@@ -251,7 +251,7 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   }
 
 
-  wav_con=fopen(p_wav_filename, "w+");
+  wav_con=fopen(p_wav_filename, "wb+");
 
   W.filetbl[0] = wac_con;
   W.filetbl[1] = wav_con;
@@ -348,14 +348,18 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   W.seekentries = hdr[22] | (hdr[23] << 8);
 
   // Skip over the seek table (not used in this example)
-  printf("W.seekentries %d ",W.seekentries);
-  for (i = 0; i < W.seekentries && !feof((&W)->filetbl[0]) ; i++)
+  printf("Blocksize %d\n",W.blocksize);
+  printf("Samplerate %d\n",W.samplerate);
+  printf("Samplecount %lu\n",W.samplecount);
+  printf("Seeksize %d\n",W.seeksize);
+  printf("Seekentries %d\n",W.seekentries);
+  for (i = 0; i < W.seekentries ; i++)
     {
       if ((sz = READ(&W, hdr, 4)) != 4)
         {
           if (!feof((&W)->filetbl[0]))
             {
-            sprintf(error_message,"wac2wav error 8, %s %d %d:, unexpected eof", p_wac_filename,W.seekentries, i);
+            sprintf(error_message,"wac2wav error 8, %s %d %d %zu :, unexpected eof", p_wac_filename,W.seekentries, i, sz);
             UNPROTECT(2);
             free(file_path);
             free(file_base);
@@ -415,7 +419,7 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   WRITE(&W, cc, 4);
 
   GetFileParts(p_wac_filename, file_path, file_base, file_ext);
-  printf("Processing: %s ", file_base);
+  printf("\nProcessing: %s ", file_base);
 
   // Read frames of data and WRITE samples out
   while (W.samplecount > 0)
@@ -431,7 +435,7 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   free(file_path);
   free(file_base);
   free(file_ext);
-  printf("Done\r\n");
+  printf("Done\r\n\n");
   return R_NilValue;
 }
 
@@ -507,6 +511,7 @@ void FrameDecode(WacState *WP)
   int lossybits = WP->flags & 0x0f;
   char error_message[80];
 
+  //printf("frameindex = %d\n", WP->frameindex );
   // At start of block parse block header
   if (0 == (WP->frameindex % WP->blocksize))
     {
@@ -647,15 +652,16 @@ void GetFileParts(char *path, char *file_path, char *file_base, char *file_ext)
     int   iDelim=0;
     int   rel=0, i;
 
+    
     strcpy(File_Path, path); //capture path
-
-    if(File_Path)
-    {   //determine type of path string (C:\\, \\, /, ./, .\\)
-        if((strlen(File_Path) > 1) &&
-
-            (
+    
+    //determine type of path string (C:\\, \\, /, ./, .\\)
+    //printf("File_Path[0] = %c File_Path[1] = %c File_Path[2] = %c",
+    //      File_Path[0],File_Path[1],File_Path[2]);
+    if((strlen(File_Path) > 1) &&
+           (
             ((File_Path[1] == ':' ) &&
-             (File_Path[2] == '\\'))||
+             (File_Path[2] == '\\' || File_Path[2] == '/')) ||
 
              (File_Path[0] == '\\') ||
 
@@ -665,24 +671,26 @@ void GetFileParts(char *path, char *file_path, char *file_base, char *file_ext)
              (File_Path[1] == '/' ))||
 
             ((File_Path[0] == '.' ) &&
-             (File_Path[1] == '\\'))
+             (File_Path[1] == '\\' || File_Path[1] == '/'))
             )
         )
         {
             sDelim = calloc(5, sizeof(char));
-            /*  //   */if(path[0] == '\\') iDelim = '\\', strcpy(sDelim, "\\");
-            /*  c:\\ */if(path[1] == ':' ) iDelim = '\\', strcpy(sDelim, "\\"); // also satisfies path[2] == '\\'
-            /*  /    */if(path[0] == '/' ) iDelim = '/' , strcpy(sDelim, "/" );
-            /* ./    */if((path[0] == '.')&&(path[1] == '/')) iDelim = '/' , strcpy(sDelim, "/" );
-            /* .\\   */if((path[0] == '.')&&(path[1] == '\\')) iDelim = '\\' , strcpy(sDelim, "\\" );
-            /*  \\\\ */if((path[0] == '\\')&&(path[1] == '\\')) iDelim = '\\', strcpy(sDelim, "\\");
+            if(File_Path[0] == '\\') iDelim = '\\', strcpy(sDelim, "\\");
+            if(File_Path[1] == ':' ) iDelim = '\\', strcpy(sDelim, "\\"); // also satisfies path[2] == '\\'
+            if(File_Path[0] == '/' ) iDelim = '/' , strcpy(sDelim, "/" );
+            if(File_Path[2] == '/' ) iDelim = '/' , strcpy(sDelim, "/" );
+            if(File_Path[2] == '\\' ) iDelim = '\\' , strcpy(sDelim, "\\" );
+            if((File_Path[0] == '.')&&(File_Path[1] == '/')) iDelim = '/' , strcpy(sDelim, "/" );
+            if((File_Path[0] == '.')&&(File_Path[1] == '\\')) iDelim = '\\' , strcpy(sDelim, "\\" );
+            if((File_Path[0] == '\\')&&(File_Path[1] == '\\')) iDelim = '\\', strcpy(sDelim, "\\");
+            
             if(File_Path[0]=='.')
             {
                 rel = 1;
                 File_Path[0]='*';
             }
 
-            File_Path[0]=0;
             File_Base[0]=0;
             File_Ext[0]=0;
             if(!strstr(File_Path, "."))  // if no filename, set path to have trailing delim,
@@ -704,28 +712,32 @@ void GetFileParts(char *path, char *file_path, char *file_base, char *file_ext)
                 lenExt_ = (lenFullPath - i) -1;
 
                 base = strtok(File_Path, sDelim);
+                
                 while(base)
                 {
                     strcpy(File_Ext, base);
                     base = strtok(NULL, sDelim);
                 }
-
+                
                 strcpy(File_Base, File_Ext);
+                strcpy(File_Ext, "wac");
+                
                 lenBase_ = strlen(File_Base) - lenExt_;
                 File_Base[lenBase_-1]=0;
                 strcpy(file_base, File_Base);
 
                 File_Path[lenFullPath -lenExt_ -lenBase_ -1] = 0;
 
-                ext = strtok(File_Ext, ".");
-                ext = strtok(NULL, ".");
-                if(ext) strcpy(file_ext, File_Ext);
-                else strcpy(file_ext, "");
+                //ext = strtok(File_Ext, ".");
+                //ext = strtok(File_Ext, ".");
+                //strcpy(file_ext, ext);
+                //printf("file_ext = %s\n",file_ext);
             }
+            
             memset(file_path, 0, lenFullPath);
             strcpy(file_path, File_Path);
             if(rel)file_path[0]='.';//replace first "." for relative path
             free(sDelim);
         }
-    }
 }
+

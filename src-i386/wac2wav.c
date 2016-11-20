@@ -2,15 +2,15 @@
 
 // Modified from original 'wac2wavcmd' to place in an R wrapper function
 // Copyright (C) 2014 Wildlife Acoustics, Inc.
-// 
+//
 // This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public LIcense as published by 
-// the Free Software Foundation, either version 3 of the License, or 
+// it under the terms of the GNU General Public LIcense as published by
+// the Free Software Foundation, either version 3 of the License, or
 // (at yuour option) any later version.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
@@ -24,10 +24,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-// 
+//
 // wac2wav.c VERSION 1.0
 //
-// This code will take an untriggered WAC file (version 4 or earlier) as 
+// This code will take an untriggered WAC file (version 4 or earlier) as
 // standard input and produce an uncompressed WAV file as standard output.
 //
 // This code serves as an example of how to decode the Wildlife Acoustics
@@ -39,9 +39,9 @@
 // The comments below are intended to provide some description of how the
 // WAC format is implemented, but you should refer to the code as authoratative.
 //
-// A WAC file has the following format.  Note multi-byte values are 
+// A WAC file has the following format.  Note multi-byte values are
 // little-endian.
-// 
+//
 //   1. WAC HEADER (24 bytes)
 //      0x00 - 0x03 = "WAac" - identifies this as a WAC file
 //      0x04        = Version number (<= 4)
@@ -53,7 +53,7 @@
 //                             For "WAC1", this is 1, and so on, representing
 //                             increasing levels of compression as the number
 //                             of discarded least-significant bits.  WAC0 is
-//                             lossless compression, WAC1 is equivalent to 
+//                             lossless compression, WAC1 is equivalent to
 //                             15-bit dynamic range, WAC2 is equivalent to
 //                             14-bit dynamic range, and so on.
 //                      0x10 = Triggered WAC file e.g. one or both channels
@@ -64,9 +64,9 @@
 //                             capable of handling triggers can break a file
 //                             into pieces discarding these zero-value frames.
 //                             Note: This example code does not support
-//                             this, but look in the code for "ZERO FRAME" 
+//                             this, but look in the code for "ZERO FRAME"
 //                             to see where this would be used.
-//                      0x20 = GPS data present - GPS data is interleaved with 
+//                      0x20 = GPS data present - GPS data is interleaved with
 //                             data in block headers.
 //                      0x40 = TAG data present - TAG data is interleaved with
 //                             data in block headers.  The TAG corresponds to
@@ -77,8 +77,8 @@
 //      0x16 - 0x17 = Seek entries (size of seek table in 32-bit words)
 //
 // 2. SEEK TABLE
-//    The Seek Table contains (Seek entries) number of 4-byte (32-bit) 
-//    values representing the absolute offset into the WAC file corresponding  
+//    The Seek Table contains (Seek entries) number of 4-byte (32-bit)
+//    values representing the absolute offset into the WAC file corresponding
 //    to each (Seek size) blocks.  The offset is measured in 16-bit words so
 //    you would double these values to convert to a byte offset into the file.
 //    The intention of the seek table is to make it easier to jump to a position
@@ -92,8 +92,8 @@
 //    Additionally, blocks are organized into seek table entries as described
 //    above according to the seek size.
 //
-//    Each block is aligned to a 16-bit boundary and consists of a block 
-//    header followed by block size frames. The format of the block header is 
+//    Each block is aligned to a 16-bit boundary and consists of a block
+//    header followed by block size frames. The format of the block header is
 //    as follows:
 //
 //    0x00 - 0x03 = 0x00018000 = unique block header pattern
@@ -104,28 +104,28 @@
 //                  not occur in the data stream.
 //
 //    Following the block header are a series of variable-length bit-fields
-//    which do not necessarily line up on byte boundaries.  Refer to the 
+//    which do not necessarily line up on byte boundaries.  Refer to the
 //    ReadBits() function for specifics relating to the encoding.
 //
 //    If (flags & 0x20), then GPS data is present in every seek size blocks
-//    beginning with the first block at index zero.  The GPS data is encoded as 
-//    25-bits of signed latitude and 26-bits of signed longitude information.  
-//    (using 2's complement notation). The latitude and longitude values in 
-//    degrees can be determined by dividing these signed quantities by 100,000 
+//    beginning with the first block at index zero.  The GPS data is encoded as
+//    25-bits of signed latitude and 26-bits of signed longitude information.
+//    (using 2's complement notation). The latitude and longitude values in
+//    degrees can be determined by dividing these signed quantities by 100,000
 //    with positive values corresponding to North latitude and West longitude.
 //
-//    If (flags & 0x40), then tag data is present in every block and is 
+//    If (flags & 0x40), then tag data is present in every block and is
 //    represented by 4-bits.  For tagged recordings (e.g. from an EM3), the
 //    tag values 1-4 correspond to the buttons 'A' through 'D', and a value 0
-//    indicates that no tag is present.  While the tag button is pressed, 
+//    indicates that no tag is present.  While the tag button is pressed,
 //    blocks will be written with the corresponding tag.
 //
 //    Note that the GPS and TAG values are not implemented in this code and are
-//    simply skipped, but please see the comments in the code for more 
+//    simply skipped, but please see the comments in the code for more
 //    information.
 //
 //    Following the block header and optional GPS or tag data are block size
-//    frames of frame size samples for each channel.  For multi-channel 
+//    frames of frame size samples for each channel.  For multi-channel
 //    recordings, samples are interleaved.
 //
 //    Compression uses Golumb coding of the deltas between successive samples.
@@ -138,12 +138,12 @@
 //    indicates that the frame contains no content e.g. representing the
 //    space inbetween triggered recordings.
 //
-//    What follows are Golumb-encoded representations of deltas of interleaved 
+//    What follows are Golumb-encoded representations of deltas of interleaved
 //    (by channel) samples.  Details can be found in FrameDecode().
 //
 //    NOTE: We have not yet added Wildlife Acoustics metadata to the WAC
-//    format and may do so in the future, quite likely by appending a 
-//    "Wamd" chunk at the end of the file.  
+//    format and may do so in the future, quite likely by appending a
+//    "Wamd" chunk at the end of the file.
 //
 //    NOTE: This code compiles on Linux and should be easy to port to other
 //    applications.  Little-endian is assumed.
@@ -182,11 +182,14 @@ typedef struct WacState_s
 // Forward declarations
 int ReadBits(WacState *WP, int _bits);
 unsigned short ReadWord(WacState *WP);
-void FrameDecode(WacState *WP); 
+void FrameDecode(WacState *WP);
+void GetFileParts(char *p_wac_filename, char *file_path, char *file_base, char *file_ext);
 
-// Macros for read/write 
+// Macros for read/write
 #define READ(WP, buf, len) fread(buf, 1, len, (WP)->filetbl[0])
 #define WRITE(WP, buf, len) fwrite(buf, 1, len, (WP)->filetbl[1])
+#define MAX_PATHNAME_LEN 265
+#define MAX_EXT_LEN 40
 
 // Simply take input wac file and output wav file
 SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
@@ -197,47 +200,72 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   unsigned char hdr[24];
   unsigned char cc[4];
   char error_message[80];
-  char *p_wac_filename; 
-  char *p_wav_filename;   
+  char *p_wac_filename;
+  char *p_wav_filename;
+  char *file_ext;
+  char *file_base;
+  char *file_path;
 
   FILE *wac_con;
   FILE *wav_con;
-  // Protect memory 
+  // Protect memory
+
   PROTECT(wac_filename = AS_CHARACTER(wac_filename));
   PROTECT(wav_filename = AS_CHARACTER(wav_filename));
-    	
+
   // allocate memory to p_wac_filename, p_wav_filename:
   p_wac_filename = R_alloc(strlen(CHAR(STRING_ELT(wac_filename, 0))), sizeof(char));
   p_wav_filename = R_alloc(strlen(CHAR(STRING_ELT(wav_filename, 0))), sizeof(char));
+  file_path = calloc(MAX_PATHNAME_LEN, sizeof(char));
+  file_base = calloc(MAX_PATHNAME_LEN, sizeof(char));
+  file_ext = calloc(MAX_EXT_LEN, sizeof(char));
   // ... and copy filenames to p_filename:
   strcpy(p_wac_filename, CHAR(STRING_ELT(wac_filename, 0)));
   strcpy(p_wav_filename, CHAR(STRING_ELT(wav_filename, 0)));
-  
-  // Initialize WAC state 
+
+  // Initialize WAC state
   WacState W;
   memset(&W, 0, sizeof(W));
- 
+
   // For this simple example, we'll just read WAC from wac_con and write WAV
   // to wav_con...
 
-  if ((wac_con = fopen(p_wac_filename, "r")) == NULL)
+  if (strlen(p_wac_filename) > MAX_PATHNAME_LEN)
   {
-       sprintf(error_message,"wac2wav error 1, %s: unable to read", p_wac_filename); 
+       sprintf(error_message,"wac2wav error 0, %s: filename too long", p_wac_filename);
        UNPROTECT(2);
+       free(file_path);
+       free(file_base);
+       free(file_ext);
        error_return(error_message);
   }
-  
-  wav_con=fopen(p_wav_filename, "w+");
-  
+
+  if ((wac_con = fopen(p_wac_filename, "rb")) == NULL)
+  {
+       sprintf(error_message,"wac2wav error 1, %s: unable to read", p_wac_filename);
+       UNPROTECT(2);
+       free(file_path);
+       free(file_base);
+       free(file_ext);
+       error_return(error_message);
+  }
+
+
+  wav_con=fopen(p_wav_filename, "wb+");
+
   W.filetbl[0] = wac_con;
   W.filetbl[1] = wav_con;
 
   // Parse WAC header and validate supported formats
-
-  if ((sz = fread(hdr, 1, 24, (&W)->filetbl[0])) != 24)
+  //READ(WP, buf, len)
+  //if ((sz = fread(hdr, 1, 24, (&W)->filetbl[0])) != 24)
+  if ((sz = READ(&W, hdr, 24)) != 24)
     {
-      sprintf(error_message,"wac2wav error 2, %s:, unexpected eof", p_wac_filename); 
+      sprintf(error_message,"wac2wav error 2, %s:, unexpected eof", p_wac_filename);
       UNPROTECT(2);
+      free(file_path);
+      free(file_base);
+      free(file_ext);
       error_return(error_message);
     }
 
@@ -248,8 +276,11 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
       || hdr[3] != 'c'
      )
     {
-      sprintf(error_message,"wac2wav error 3, %s:, input not a WAC file", p_wac_filename); 
+      sprintf(error_message,"wac2wav error 3, %s:, input not a WAC file", p_wac_filename);
       UNPROTECT(2);
+      free(file_path);
+      free(file_base);
+      free(file_ext);
       error_return(error_message);
     }
 
@@ -257,8 +288,11 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   W.version = hdr[4];
   if (W.version > 4)
     {
-      sprintf(error_message,"wac2wav error 4, %s:, input version%d not supported", p_wac_filename,W.version); 
+      sprintf(error_message,"wac2wav error 4, %s:, input version%d not supported", p_wac_filename,W.version);
       UNPROTECT(2);
+      free(file_path);
+      free(file_base);
+      free(file_ext);
       error_return(error_message);
     }
 
@@ -270,17 +304,23 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   // 128 sample stereo) frames.
   if (W.channelcount * W.framesize != 256)
     {
-      sprintf(error_message,"wac2wav error 5, %s:, unsupported block size %d", p_wac_filename, W.channelcount*W.framesize); 
+      sprintf(error_message,"wac2wav error 5, %s:, unsupported block size %d", p_wac_filename, W.channelcount*W.framesize);
       UNPROTECT(2);
-      error_return(error_message);      
+      free(file_path);
+      free(file_base);
+      free(file_ext);
+      error_return(error_message);
     }
 
   // All Wildlife Acoustics WAC files have 1 or 2 channels
   if (W.channelcount > 2)
     {
-      sprintf(error_message,"wac2wav error 6, %s:, unsupported channel count %d", p_wac_filename, W.channelcount); 
+      sprintf(error_message,"wac2wav error 6, %s:, unsupported channel count %d", p_wac_filename, W.channelcount);
       UNPROTECT(2);
-      error_return(error_message);  
+      free(file_path);
+      free(file_base);
+      free(file_ext);
+      error_return(error_message);
     }
 
   // Read flags
@@ -292,9 +332,12 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   // bit will be set.  For non-triggered recordings, this bit will be clear.
   if (W.flags & 0x10)
     {
-      sprintf(error_message,"wac2wav error 7, %s:, triggered WAC files not supported", p_wac_filename); 
+      sprintf(error_message,"wac2wav error 7, %s:, triggered WAC files not supported", p_wac_filename);
       UNPROTECT(2);
-      error_return(error_message);  
+      free(file_path);
+      free(file_base);
+      free(file_ext);
+      error_return(error_message);
     }
 
   // Parse additional fields from the WAC header
@@ -305,14 +348,25 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   W.seekentries = hdr[22] | (hdr[23] << 8);
 
   // Skip over the seek table (not used in this example)
-  for (i = 0; i < W.seekentries; i++)
+  printf("Blocksize %d\n",W.blocksize);
+  printf("Samplerate %d\n",W.samplerate);
+  printf("Samplecount %lu\n",W.samplecount);
+  printf("Seeksize %d\n",W.seeksize);
+  printf("Seekentries %d\n",W.seekentries);
+  for (i = 0; i < W.seekentries ; i++)
     {
-      if ((sz = fread(hdr, 1, 4, (&W)->filetbl[0])) != 4)
+      if ((sz = READ(&W, hdr, 4)) != 4)
         {
-          sprintf(error_message,"wac2wav error 8, %s:, unexpected eof", p_wac_filename); 
-          UNPROTECT(2);
-          error_return(error_message);	  
-	}
+          if (!feof((&W)->filetbl[0]))
+            {
+            sprintf(error_message,"wac2wav error 8, %s %d %d %zu :, unexpected eof", p_wac_filename,W.seekentries, i, sz);
+            UNPROTECT(2);
+            free(file_path);
+            free(file_base);
+            free(file_ext);
+            error_return(error_message);
+            }
+	      }
     }
 
   // Write WAV file header from WAC header information
@@ -335,9 +389,9 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   cc[0] = (ul      ) & 0xff;
   WRITE(&W, cc, 4);
   cc[0] = 1; // tag
-  cc[1] = 0; 
+  cc[1] = 0;
   WRITE(&W, cc, 2);
-  cc[0] = W.channelcount; 
+  cc[0] = W.channelcount;
   WRITE(&W, cc, 2);
   ul = W.samplerate;
   cc[3] = (ul >> 24) & 0xff;
@@ -356,13 +410,16 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   WRITE(&W, cc, 2);
   cc[0] = 16; // bits per sample
   WRITE(&W, cc, 2);
-  WRITE(&W, "data", 4); 
+  WRITE(&W, "data", 4);
   ul = W.samplecount * W.channelcount * 2;
   cc[3] = (ul >> 24) & 0xff;
   cc[2] = (ul >> 16) & 0xff;
   cc[1] = (ul >>  8) & 0xff;
   cc[0] = (ul      ) & 0xff;
   WRITE(&W, cc, 4);
+
+  GetFileParts(p_wac_filename, file_path, file_base, file_ext);
+  printf("\nProcessing: %s ", file_base);
 
   // Read frames of data and WRITE samples out
   while (W.samplecount > 0)
@@ -374,8 +431,11 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   // All done
   fclose(wac_con);
   fclose(wav_con);
-  UNPROTECT(2);	
-  printf("Done\r\n");
+  UNPROTECT(2);
+  free(file_path);
+  free(file_base);
+  free(file_ext);
+  printf("Done\r\n\n");
   return R_NilValue;
 }
 
@@ -384,7 +444,7 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
 // This function reads the specified number of bits from the file (1-16) and
 // returns the signed value.
 //
-// We buffer 16-bits at a time in bitbuffer and keep track of the current 
+// We buffer 16-bits at a time in bitbuffer and keep track of the current
 // filebit_index number of bits remaining in the buffer.
 //
 int ReadBits(WacState *WP, int bits)
@@ -398,30 +458,30 @@ int ReadBits(WacState *WP, int bits)
       // If starting a new 16-bit word, read the next 16 bits
       if (WP->filebit_index == 0)
         {
-          sz = fread(&WP->bitbuffer, 1, 2, WP->filetbl[0]);
-	  //READ(WP, &WP->bitbuffer, 2);
-	  WP->filebit_index = 16;
-	}
+        sz = fread(&WP->bitbuffer, 1, 2, WP->filetbl[0]);
+	    //READ(WP, &WP->bitbuffer, 2);
+	    WP->filebit_index = 16;
+	    }
 
       // If all the bits we need are in the current word, extract the bits,
       // update state, and break out of the loop.
       if (bits < WP->filebit_index)
         {
-	  x <<= bits;
-	  x |= WP->bitbuffer >> (16 - bits);
-	  WP->bitbuffer <<= bits;
-	  WP->filebit_index -= bits;
-	  break;
-	}
+	    x <<= bits;
+	    x |= WP->bitbuffer >> (16 - bits);
+	    WP->bitbuffer <<= bits;
+	    WP->filebit_index -= bits;
+	    break;
+	    }
       else
         {
-	  // Otherwise extract the bits we have and continue (which will
-	  // then load the next 16-bits into the bitbuffer
-	  x <<= WP->filebit_index;
-	  x |= WP->bitbuffer >> (16 - WP->filebit_index);
-	  bits -= WP->filebit_index;
-	  WP->filebit_index = 0;
-	}
+	    // Otherwise extract the bits we have and continue (which will
+	    // then load the next 16-bits into the bitbuffer
+	    x <<= WP->filebit_index;
+	    x |= WP->bitbuffer >> (16 - WP->filebit_index);
+	    bits -= WP->filebit_index;
+	    WP->filebit_index = 0;
+	    }
     }
   return (int) x;
 }
@@ -451,6 +511,7 @@ void FrameDecode(WacState *WP)
   int lossybits = WP->flags & 0x0f;
   char error_message[80];
 
+  //printf("frameindex = %d\n", WP->frameindex );
   // At start of block parse block header
   if (0 == (WP->frameindex % WP->blocksize))
     {
@@ -462,7 +523,7 @@ void FrameDecode(WacState *WP)
 	  || ReadWord(WP) != ((block >> 16) & 0xffff)
 	 )
 	{
-	  printf(error_message,"wac2wav error 9, bad block header"); 
+	  printf(error_message,"wac2wav error 9, bad block header");
 	  return;
         }
 
@@ -494,10 +555,10 @@ void FrameDecode(WacState *WP)
       // be 1-4 corresponding to buttons A-D being depressed during this frame.
       if (WP->flags & 0x40)
         {
-	  int tag = ReadBits(WP,4);
-	}
+	      int tag = ReadBits(WP,4);
+	      }
     }
-  // Advance frame 
+  // Advance frame
   WP->frameindex++;
 
   // Read the per-channel Golumb remainder code size
@@ -536,7 +597,7 @@ void FrameDecode(WacState *WP)
 	  // Read the remainder code from the specified number of bits
 	  code = ReadBits(WP,g[ch]);
 
-	  // Read the quotient represented by alternating 1/0 pattern 
+	  // Read the quotient represented by alternating 1/0 pattern
 	  // following the remainder code
 	  stopbit = (code & 1) ^ 1;
 	  while (stopbit != ReadBits(WP,1))
@@ -569,3 +630,114 @@ void FrameDecode(WacState *WP)
 	}
     }
 }
+
+/////////////////////////////////////////////////////////
+//
+// Example:
+// Given path == "C:\\dir1\\dir2\\dir3\\file.exe"
+// will return path_ as   "C:\\dir1\\dir2\\dir3"
+// Will return base_ as   "file"
+// Will return ext_ as    "exe"
+//
+/////////////////////////////////////////////////////////
+void GetFileParts(char *path, char *file_path, char *file_base, char *file_ext)
+{
+    char *base;
+    char *ext;
+    char File_Path[MAX_PATHNAME_LEN];
+    char File_Ext[MAX_EXT_LEN];
+    char File_Base[MAX_PATHNAME_LEN];
+    int  lenFullPath, lenExt_, lenBase_;
+    char *sDelim={0};
+    int   iDelim=0;
+    int   rel=0, i;
+
+    
+    strcpy(File_Path, path); //capture path
+    
+    //determine type of path string (C:\\, \\, /, ./, .\\)
+    //printf("File_Path[0] = %c File_Path[1] = %c File_Path[2] = %c",
+    //      File_Path[0],File_Path[1],File_Path[2]);
+    if((strlen(File_Path) > 1) &&
+           (
+            ((File_Path[1] == ':' ) &&
+             (File_Path[2] == '\\' || File_Path[2] == '/')) ||
+
+             (File_Path[0] == '\\') ||
+
+             (File_Path[0] == '/' ) ||
+
+            ((File_Path[0] == '.' ) &&
+             (File_Path[1] == '/' ))||
+
+            ((File_Path[0] == '.' ) &&
+             (File_Path[1] == '\\' || File_Path[1] == '/'))
+            )
+        )
+        {
+            sDelim = calloc(5, sizeof(char));
+            if(File_Path[0] == '\\') iDelim = '\\', strcpy(sDelim, "\\");
+            if(File_Path[1] == ':' ) iDelim = '\\', strcpy(sDelim, "\\"); // also satisfies path[2] == '\\'
+            if(File_Path[0] == '/' ) iDelim = '/' , strcpy(sDelim, "/" );
+            if(File_Path[2] == '/' ) iDelim = '/' , strcpy(sDelim, "/" );
+            if(File_Path[2] == '\\' ) iDelim = '\\' , strcpy(sDelim, "\\" );
+            if((File_Path[0] == '.')&&(File_Path[1] == '/')) iDelim = '/' , strcpy(sDelim, "/" );
+            if((File_Path[0] == '.')&&(File_Path[1] == '\\')) iDelim = '\\' , strcpy(sDelim, "\\" );
+            if((File_Path[0] == '\\')&&(File_Path[1] == '\\')) iDelim = '\\', strcpy(sDelim, "\\");
+            
+            if(File_Path[0]=='.')
+            {
+                rel = 1;
+                File_Path[0]='*';
+            }
+
+            File_Base[0]=0;
+            File_Ext[0]=0;
+            if(!strstr(File_Path, "."))  // if no filename, set path to have trailing delim,
+            {                      //set others to "" and return
+                lenFullPath = strlen(File_Path);
+                if(File_Path[lenFullPath-1] != iDelim)
+                    strcat(File_Path, sDelim);
+            }
+            else
+            {
+                //Get lenth of full path
+                lenFullPath = strlen(File_Path);
+
+                //Get length of extension:
+                for(i=lenFullPath-1;i>=0;i--)
+                {
+                    if(File_Path[i]=='.') break;
+                }
+                lenExt_ = (lenFullPath - i) -1;
+
+                base = strtok(File_Path, sDelim);
+                
+                while(base)
+                {
+                    strcpy(File_Ext, base);
+                    base = strtok(NULL, sDelim);
+                }
+                
+                strcpy(File_Base, File_Ext);
+                strcpy(File_Ext, "wac");
+                
+                lenBase_ = strlen(File_Base) - lenExt_;
+                File_Base[lenBase_-1]=0;
+                strcpy(file_base, File_Base);
+
+                File_Path[lenFullPath -lenExt_ -lenBase_ -1] = 0;
+
+                //ext = strtok(File_Ext, ".");
+                //ext = strtok(File_Ext, ".");
+                //strcpy(file_ext, ext);
+                //printf("file_ext = %s\n",file_ext);
+            }
+            
+            memset(file_path, 0, lenFullPath);
+            strcpy(file_path, File_Path);
+            if(rel)file_path[0]='.';//replace first "." for relative path
+            free(sDelim);
+        }
+}
+
