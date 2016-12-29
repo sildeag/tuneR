@@ -348,11 +348,11 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   W.seekentries = hdr[22] | (hdr[23] << 8);
 
   // Skip over the seek table (not used in this example)
-  printf("Blocksize %d\n",W.blocksize);
-  printf("Samplerate %d\n",W.samplerate);
-  printf("Samplecount %lu\n",W.samplecount);
-  printf("Seeksize %d\n",W.seeksize);
-  printf("Seekentries %d\n",W.seekentries);
+  Rprintf("Blocksize %d\n",W.blocksize);
+  Rprintf("Samplerate %d\n",W.samplerate);
+  Rprintf("Samplecount %lu\n",W.samplecount);
+  Rprintf("Seeksize %d\n",W.seeksize);
+  Rprintf("Seekentries %d\n",W.seekentries);
   for (i = 0; i < W.seekentries ; i++)
     {
       if ((sz = READ(&W, hdr, 4)) != 4)
@@ -419,7 +419,7 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   WRITE(&W, cc, 4);
 
   GetFileParts(p_wac_filename, file_path, file_base, file_ext);
-  printf("\nProcessing: %s ", file_base);
+  Rprintf("\nProcessing: %s ", file_base);
 
   // Read frames of data and WRITE samples out
   while (W.samplecount > 0)
@@ -435,7 +435,7 @@ SEXP wac2wav(SEXP wac_filename, SEXP wav_filename)
   free(file_path);
   free(file_base);
   free(file_ext);
-  printf("Done\r\n\n");
+  Rprintf("Done\r\n\n");
   return R_NilValue;
 }
 
@@ -523,13 +523,13 @@ void FrameDecode(WacState *WP)
 	  || ReadWord(WP) != ((block >> 16) & 0xffff)
 	 )
 	{
-	  printf(error_message,"wac2wav error 9, bad block header");
+	  //sprintf(error_message,"wac2wav error 9, bad block header");
 	  return;
         }
 
       if (0 == WP->frameindex % 1024)
         {
-          printf("."); // progress...
+          Rprintf("."); // progress...
 	}
 
       // If GPS data present and the block number is modulo the blocks per
