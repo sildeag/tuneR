@@ -1,5 +1,4 @@
 #' @export
-
 plot.Wave.channel <- 
 function(x, xunit, ylim, xlab, ylab, main, nr, simplify, axes = TRUE, yaxt = par("yaxt"), 
         las = 1, center = TRUE, ...){
